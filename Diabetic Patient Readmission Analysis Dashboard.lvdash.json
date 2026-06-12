@@ -1,0 +1,775 @@
+{
+  "datasets": [
+    {
+      "name": "patient_readmission_metrics",
+      "displayName": "Patient Readmission Metrics",
+      "config": {
+        "source": "SELECT *  FROM patient_readmission_analytics.default.diabetic_encounters WHERE race IS NOT NULL \n  AND race != '?' \n  AND race != 'Unknown'\n  AND medical_specialty IS NOT NULL\n  AND medical_specialty != '?'\n",
+        "measures": [
+          {
+            "name": "encounter_count",
+            "expr": "COUNT(*)",
+            "displayName": "Total Encounters",
+            "comment": "Total number of patient encounters"
+          },
+          {
+            "displayName": "Avg Hospital Stay (days)",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            },
+            "name": "avg_hospital_stay",
+            "expr": "AVG(time_in_hospital)",
+            "comment": "Average length of hospital stay in days"
+          },
+          {
+            "displayName": "Avg Medications",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 1.0
+              }
+            },
+            "name": "avg_medications",
+            "expr": "AVG(num_medications)",
+            "comment": "Average number of medications administered"
+          },
+          {
+            "displayName": "Avg Procedures",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 2.0
+              }
+            },
+            "name": "avg_procedures",
+            "expr": "AVG(num_procedures)",
+            "comment": "Average number of procedures performed"
+          },
+          {
+            "displayName": "Avg Lab Procedures",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 1.0
+              }
+            },
+            "name": "avg_lab_procedures",
+            "expr": "AVG(num_lab_procedures)",
+            "comment": "Average number of lab procedures"
+          }
+        ],
+        "version": "1.1",
+        "comment": "Diabetic patient readmission metrics for analysis (filtered to exclude unknown/invalid values)",
+        "dimensions": [
+          {
+            "name": "age",
+            "expr": "age",
+            "displayName": "Age Group",
+            "comment": "Patient age group bracket"
+          },
+          {
+            "name": "gender",
+            "expr": "gender",
+            "displayName": "Gender",
+            "comment": "Patient gender"
+          },
+          {
+            "name": "race",
+            "expr": "race",
+            "displayName": "Race",
+            "comment": "Patient race"
+          },
+          {
+            "name": "readmitted",
+            "expr": "readmitted",
+            "displayName": "Readmission Status",
+            "comment": "Whether patient was readmitted (NO, <30 days, >30 days)"
+          },
+          {
+            "name": "diag_1",
+            "expr": "diag_1",
+            "displayName": "Primary Diagnosis",
+            "comment": "Primary diagnosis ICD-9 code"
+          },
+          {
+            "name": "medical_specialty",
+            "expr": "medical_specialty",
+            "displayName": "Medical Specialty",
+            "comment": "Medical specialty of the admitting physician"
+          }
+        ]
+      }
+    }
+  ],
+  "pages": [
+    {
+      "name": "ac2ff708",
+      "displayName": "Page 1",
+      "layout": [
+        {
+          "widget": {
+            "name": "readmission_pie",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "patient_readmission_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(encounter_count)",
+                      "expression": "MEASURE(`encounter_count`)"
+                    },
+                    {
+                      "name": "readmitted",
+                      "expression": "`readmitted`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Readmission Status",
+                "showTitle": true
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "measure(encounter_count)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "readmitted",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "encounters_by_age",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "patient_readmission_metrics",
+                  "fields": [
+                    {
+                      "name": "age",
+                      "expression": "`age`"
+                    },
+                    {
+                      "name": "measure(encounter_count)",
+                      "expression": "MEASURE(`encounter_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Encounters by Age Group",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "age",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(encounter_count)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 4,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "encounters_by_gender",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "patient_readmission_metrics",
+                  "fields": [
+                    {
+                      "name": "gender",
+                      "expression": "`gender`"
+                    },
+                    {
+                      "name": "measure(encounter_count)",
+                      "expression": "MEASURE(`encounter_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Encounters by Gender",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "gender",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(encounter_count)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "medical_specialty_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "patient_readmission_metrics",
+                  "fields": [
+                    {
+                      "name": "medical_specialty",
+                      "expression": "`medical_specialty`"
+                    },
+                    {
+                      "name": "measure(encounter_count)",
+                      "expression": "MEASURE(`encounter_count`)"
+                    },
+                    {
+                      "name": "measure(avg_hospital_stay)",
+                      "expression": "MEASURE(`avg_hospital_stay`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Medical Specialty Summary",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "medical_specialty"
+                  },
+                  {
+                    "fieldName": "measure(encounter_count)",
+                    "format": {
+                      "type": "number-plain",
+                      "abbreviation": "compact"
+                    }
+                  },
+                  {
+                    "fieldName": "measure(avg_hospital_stay)",
+                    "format": {
+                      "type": "number-plain",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "total_encounters",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "patient_readmission_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(encounter_count)",
+                      "expression": "MEASURE(`encounter_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total Encounters",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(encounter_count)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "avg_hospital_stay",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "patient_readmission_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(avg_hospital_stay)",
+                      "expression": "MEASURE(`avg_hospital_stay`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Avg Hospital Stay",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(avg_hospital_stay)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  },
+                  "formatTemplate": "{{ @formatted }} days"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 1,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "avg_medications",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "patient_readmission_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(avg_medications)",
+                      "expression": "MEASURE(`avg_medications`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Avg Medications",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(avg_medications)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 1,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "main_title",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## <span style=\"text-align:center;display:block;\">Diabetic Patient Readmission Analysis Dashboard</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "demographics_heading",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### Patient Demographics"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "clinical_heading",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### Clinical Analysis"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "encounters_by_race",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "patient_readmission_metrics",
+                  "fields": [
+                    {
+                      "name": "race",
+                      "expression": "`race`"
+                    },
+                    {
+                      "name": "measure(encounter_count)",
+                      "expression": "MEASURE(`encounter_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Encounters by Race",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "race",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(encounter_count)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 9,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "avg_procedures_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "patient_readmission_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(avg_procedures)",
+                      "expression": "MEASURE(`avg_procedures`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Avg Procedures",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(avg_procedures)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 10,
+            "y": 1,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "avg_lab_procedures_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "patient_readmission_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(avg_lab_procedures)",
+                      "expression": "MEASURE(`avg_lab_procedures`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Avg Lab Procedures",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(avg_lab_procedures)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 1,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "readmission_by_race",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "patient_readmission_metrics",
+                  "fields": [
+                    {
+                      "name": "readmitted",
+                      "expression": "`readmitted`"
+                    },
+                    {
+                      "name": "race",
+                      "expression": "`race`"
+                    },
+                    {
+                      "name": "measure(encounter_count)",
+                      "expression": "MEASURE(`encounter_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Readmission Rate by Race",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "race",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(encounter_count)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "readmitted",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": false,
+                  "showTotal": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 5,
+            "y": 15,
+            "width": 7,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
