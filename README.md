@@ -6,6 +6,8 @@
 ![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
 A comprehensive analytics project for analyzing diabetic patient readmission patterns using Databricks.
+<img width="1406" height="550" alt="snip1" src="https://github.com/user-attachments/assets/d40bd282-1ac1-4ea6-8ab7-8a6cbc24ea10" />
+<img width="1461" height="679" alt="snip 2" src="https://github.com/user-attachments/assets/c7995b8c-a0e5-4514-bb46-fcc7f0757d0a" />
 
 ## Overview
 
@@ -77,12 +79,6 @@ This project follows the **Medallion Architecture** pattern, a best practice for
 * Resource allocation planning
 * Compliance reporting
 
-## Contributing
 
-To contribute to this project:
-1. Create a feature branch
-2. Make your changes
-3. Test thoroughly
-4. Submit a pull request with a detailed description
 
 
